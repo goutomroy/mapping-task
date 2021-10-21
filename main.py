@@ -4,7 +4,6 @@ import time
 from threading import Lock
 
 import requests
-from bs4 import BeautifulSoup
 from requests import RequestException
 
 from models import Article, TitleSection, TextSection, LeadSection, HeaderSection, ImageSection, MediaSection
