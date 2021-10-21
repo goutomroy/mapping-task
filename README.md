@@ -1,4 +1,4 @@
-I used `python 3.9` and took about 3.5 hours to finish.  
+I used `python 3.9` and took about 4 hours to finish.  
 
 ### To Run the Script
 
