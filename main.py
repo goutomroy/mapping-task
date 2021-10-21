@@ -4,6 +4,7 @@ import time
 from threading import Lock
 
 import requests
+from bs4 import BeautifulSoup
 from requests import RequestException
 
 from models import Article, TitleSection, TextSection, LeadSection, HeaderSection, ImageSection, MediaSection
@@ -19,6 +20,7 @@ def build_sections(article_response, media_response):
         if section["type"] == "title":
             sections.append(TitleSection(**section))
         elif section["type"] == "text":
+            section["text"] = BeautifulSoup(section["text"], "lxml").text
             sections.append(TextSection(**section))
         elif section["type"] == "lead":
             sections.append(LeadSection(**section))
@@ -98,10 +100,13 @@ def start_thread_pool(articles):
 def start_pulling():
     while True:
         try:
+
             start_thread_pool(pull_partial_article_list())
             time.sleep(300)
+
         except RequestException as request_exception:
             logging.error(str(request_exception))
+
         except KeyboardInterrupt:
             logging.info("Stopped Explicitly.")
             for article in article_list:
