@@ -51,11 +51,9 @@ def pull_article_media(article_id):
 
 def pull_article_detail(lock: Lock, article_id):
 
-    lock.acquire()
-    if article_id in article_dict:
-        lock.release()
-        return
-    lock.release()
+    with lock:
+        if article_id in article_dict:
+            return
 
     url = f"https://mapping-test.fra1.digitaloceanspaces.com/data/articles/{article_id}.json"
 
