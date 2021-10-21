@@ -9,7 +9,7 @@ from requests import RequestException
 from models import Article, TitleSection, TextSection, LeadSection, HeaderSection, ImageSection, MediaSection
 
 logging.basicConfig(format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%H:%M:%S")
-article_list = []
+article_dict = {}
 
 
 def build_sections(article_response, media_response):
@@ -51,6 +51,12 @@ def pull_article_media(article_id):
 
 def pull_article_detail(lock: Lock, article_id):
 
+    lock.acquire()
+    if article_id in article_dict:
+        lock.release()
+        return
+    lock.release()
+
     url = f"https://mapping-test.fra1.digitaloceanspaces.com/data/articles/{article_id}.json"
 
     try:
@@ -68,16 +74,7 @@ def pull_article_detail(lock: Lock, article_id):
         sections = build_sections(article_response, media_response)
         article_response["sections"] = sections
         article = Article(**article_response)
-
-        lock.acquire()
-
-        for stored_article in article_list:
-            if stored_article.id == article.id:
-                break
-        else:
-            article_list.append(article)
-
-        lock.release()
+        article_dict[article.id] = article
 
 
 def pull_partial_article_list():
@@ -98,7 +95,6 @@ def start_thread_pool(articles):
 def start_pulling():
     while True:
         try:
-
             start_thread_pool(pull_partial_article_list())
             time.sleep(300)
 
@@ -107,11 +103,11 @@ def start_pulling():
 
         except KeyboardInterrupt:
             logging.info("Stopped Explicitly.")
-            for article in article_list:
+            for article in article_dict.values():
                 print(article.dict())
             break
 
 
 if __name__ == "__main__":
-    article_list.clear()
+    article_dict.clear()
     start_pulling()
