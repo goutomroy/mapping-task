@@ -1,5 +1,6 @@
-### To Run the Script
 I used `python 3.9` and took about 3.5 hours to finish.  
+
+### To Run the Script
 
 1. `pip install -r requirements.txt`  
 2.  Write `python3 main.py` in terminal.  
