@@ -20,7 +20,6 @@ def build_sections(article_response, media_response):
         if section["type"] == "title":
             sections.append(TitleSection(**section))
         elif section["type"] == "text":
-            section["text"] = BeautifulSoup(section["text"], "lxml").text
             sections.append(TextSection(**section))
         elif section["type"] == "lead":
             sections.append(LeadSection(**section))

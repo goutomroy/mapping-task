@@ -1,5 +1,7 @@
 from datetime import datetime
 from typing import Optional, Set, List, Union, Literal
+
+from bs4 import BeautifulSoup
 from pydantic import BaseModel, HttpUrl, Field, validator
 
 
@@ -46,6 +48,10 @@ class TextSection(Section):
         description="Content of the text.",
         example="This is how you define a text.",
     )
+
+    @validator("text", pre=True)
+    def parse_text(cls, value):
+        return BeautifulSoup(value, "lxml").text
 
 
 class ImageSection(Section):
